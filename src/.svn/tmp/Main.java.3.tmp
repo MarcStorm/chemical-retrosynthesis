@@ -1,0 +1,44 @@
+import utilities.KnowledgeBase;
+import utilities.Parser;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by Marc on 02/03/16.
+ */
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Parser parser = new Parser("KnowledgeBase2.txt");
+        KnowledgeBase knowledgeBase = new KnowledgeBase();
+        parser.readInput(knowledgeBase);
+
+        HashMap<String, Integer> problems = new HashMap<>();
+        problems.put("Na2CO3", -1);
+
+<<<<<<< .mine
+        //System.out.println(SearchAlgorithm.breadthFirstSearch(problems,knowledgeBase));
+=======
+        //knowledgeBase.process();
+        //System.out.println(SearchAlgorithm.breadthFirstSearch(problems,knowledgeBase));
+>>>>>>> .r30
+        //System.out.println(SearchAlgorithm.uniformCostSearch(problems,knowledgeBase));
+        System.out.println(SearchAlgorithm.iterativeDeepening(10,problems,knowledgeBase));
+/*
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        label.setText("" + SearchAlgorithm.breadthFirstSearch(problems,knowledgeBase));
+        label.setSize(400,400);
+        label.setFont(new Font(label.getFont().getName(), Font.PLAIN, 100));
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setSize(500,500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+*/
+
+    }
+}

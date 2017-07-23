@@ -1,0 +1,325 @@
+import utilities.*;
+
+import java.util.*;
+import java.util.PriorityQueue;
+
+public class SearchAlgorithm {
+
+    public static int stateCount;
+
+    public static boolean breadthFirstSearch(HashMap<String, Integer> problems, KnowledgeBase knowledgeBase) {
+
+        Node initialNode = new Node(problems, null, 0, 0);
+
+        // Might not be necessary to have this if-statement for our problem.
+        /*if(goalTest(initialNode)) {
+            return solution(initialNode);
+        }*/
+
+        LinkedList<Node> frontier = new LinkedList<>();
+        frontier.addLast(initialNode);
+        HashSet<HashMap<String, Integer>> explored = new HashSet<>();
+
+        int i = 1;
+        int y = 0;
+        int z = 0;
+        int exploredSize = 0;
+        int newStateCount = 0;
+        int depth = 0;
+        for(;;) {
+            //System.out.println("i = " + i);
+            //System.out.println("y = " + y);
+            //System.out.println("z = " + z);
+            if(frontier.isEmpty()) {
+                return false;
+            }
+            Node node = frontier.removeFirst();
+            if (node.depth != depth) {
+                depth = node.depth;
+                System.out.println("Depth = " + depth);
+                System.out.println("Amount of states = " + newStateCount);
+                System.out.println("Amount of stored states = " + exploredSize);
+            }
+            //explored.add(node.state);
+            //System.out.println("ExploredSize = " + explored.size());
+
+            for (String key: node.state.keySet()) {
+                if (node.state.get(key) < 0) {
+
+                    List<Reaction> reactions = knowledgeBase.getReactionsOf(key);
+
+                    //System.out.println("reaction" + reactions);
+                    //System.out.println();
+
+                    /* Checks no there's no reactions for a molecule the list will be null. If the list is null
+                    the for loop should continue.*/
+                    if (reactions == null) {
+                        //z++;
+                        continue;
+                    }
+
+                    for (Reaction reaction : reactions) {
+                        HashMap<String, Integer> newState = new HashMap<>(node.state);
+                        //System.out.println(reaction.getMap());
+                        //System.out.println("Unmerged newState " + newState);
+                        reaction.getMap().forEach((k, v) -> newState.merge(k, v, (v1, v2) -> v1 + v2));
+                        //System.out.println("Merge newState " + newState);
+
+                        cleanState(newState);
+
+                        if (goalTest(newState)) {
+                            //System.out.println("Solution:");
+                            //System.out.println(solution(reaction.toString() + "\n", node));
+                            System.out.println("Amount of states = " + newStateCount);
+                            System.out.println("Amount of stored states = " + exploredSize);
+                            return true;
+                        }
+
+                        Node newNode = new Node(newState, node, reaction, 0, node.depth+1);
+                        newStateCount++;
+                        //System.out.println("Amount of states = " + newStateCount);
+                        //System.out.println("Size of frontier = " + frontier.size());
+                        if (!explored.contains(newNode.state)) {
+                            //&& !frontier.contains(newNode)
+                            //System.out.println("Parent node:");
+                            //printState(newNode.parent);
+                            //System.out.println("Node:");
+                            //printState(newNode);
+                            frontier.addLast(newNode);
+                            exploredSize++;
+                            explored.add(newNode.state);
+                        }
+                        else {
+                            //y++;
+                            //System.out.println("Already explored");
+                        }
+                    }
+
+                    //Break when we find a Problem we need to solve.
+                    break;
+                }
+            }
+            //i++;
+        }
+        //return false;
+    }
+
+    public static boolean uniformCostSearch(HashMap<String, Integer> problems, KnowledgeBase knowledgeBase) {
+
+        Node initialNode = new Node(problems, null, 0, 0);
+
+        // Might not be necessary to have this if-statement for our problem.
+        /*if(goalTest(initialNode)) {
+            return solution(initialNode);
+        }*/
+
+        PriorityQueue<Node> frontier = new PriorityQueue<>();
+        frontier.add(initialNode);
+        HashSet<HashMap<String, Integer>> explored = new HashSet<>();
+
+        int i = 1;
+        int y = 0;
+        int z = 0;
+        int newStateCount = 0;
+        for(;;) {
+            //System.out.println("i = " + i);
+            //System.out.println("y = " + y);
+            //System.out.println("z = " + z);
+            if(frontier.isEmpty()) {
+                return false;
+            }
+            Node node = frontier.poll();
+            explored.add(node.state);
+
+            for (String key: node.state.keySet()) {
+                if (node.state.get(key) < 0) {
+
+                    List<Reaction> reactions = knowledgeBase.getReactionsOf(key);
+
+                    //System.out.println("reaction" + reactions);
+                    //System.out.println();
+
+                    /* Checks no there's no reactions for a molecule the list will be null. If the list is null
+                    the for loop should continue.*/
+                    if (reactions == null) {
+                        z++;
+                        continue;
+                    }
+
+                    for (Reaction reaction : reactions) {
+                        HashMap<String, Integer> newState = new HashMap<>(node.state);
+                        //System.out.println(reaction.getMap());
+                        //System.out.println("Unmerged newState " + newState);
+                        reaction.getMap().forEach((k, v) -> newState.merge(k, v, (v1, v2) -> v1 + v2));
+                        //System.out.println("Merge newState " + newState);
+
+                        cleanState(newState);
+
+                        if (goalTest(newState)) {
+                            System.out.println("Solution:");
+                            System.out.println(solution(reaction.toString() + "\n", node));
+                            System.out.println("Amount of states = " + newStateCount);
+                            return true;
+                        }
+
+                        Node newNode = new Node(newState, node, reaction, node.pathCost+reaction.getCost(), node.depth+1);
+                        newStateCount++;
+                        System.out.println("Amount of states = " + newStateCount);
+                        if (!explored.contains(newNode.state)) {
+                            if (!frontier.contains(newNode)) {
+                                frontier.add(newNode);
+                                //explored.add(newNode.state);
+                            } else {
+                                updateFrontier(frontier, newNode);
+                            }
+                        } else {
+                            y++;
+                            //System.out.println("Already explored");
+                        }
+                    }
+
+                    //Break when we find a Problem we need to solve.
+                    break;
+                }
+            }
+            i++;
+        }
+        //return false;
+    }
+
+    public static boolean iterativeDeepening(int maxDepth, HashMap<String, Integer> problems, KnowledgeBase knowledgeBase){
+        int currentMaxDepth = 1;
+
+        while(maxDepth > currentMaxDepth){
+            if(depthFirstSearch(currentMaxDepth, 0, problems, knowledgeBase)){
+                System.out.println("DEPTH OF SOLUTION = " + currentMaxDepth);
+                System.out.println(stateCount);
+                return true;
+            }
+            System.out.println(stateCount);
+            stateCount = 0;
+            System.out.println(++currentMaxDepth);
+        }
+        return false;
+    }
+
+    public static boolean depthFirstSearch(int maxDepth, int currentDepth, HashMap<String, Integer> problems, KnowledgeBase knowledgeBase){
+
+        Node initialNode = new Node(problems, null, 0, 0);
+        if(currentDepth >= maxDepth) return false;
+        // Might not be necessary to have this if-statement for our problem.
+        /*if(goalTest(initialNode)) {
+            return solution(initialNode);
+        }*/
+
+        LinkedList<Node> frontier = new LinkedList<>();
+        frontier.addLast(initialNode);
+
+        for(;;) {
+            if(frontier.isEmpty()) {
+                return false;
+            }
+            Node node = frontier.removeLast();
+            //explored.add(node.state);
+
+            for (String key: node.state.keySet()) {
+                if (node.state.get(key) < 0) {
+
+                    List<Reaction> reactions = knowledgeBase.getReactionsOf(key);
+
+                    //System.out.println("reaction" + reactions);
+                    //System.out.println();
+
+                    /* Checks no there's no reactions for a molecule the list will be null. If the list is null
+                    the for loop should continue.*/
+                    if (reactions == null) {
+                        continue;
+                    }
+
+                    for (Reaction reaction : reactions) {
+                        HashMap<String, Integer> newState = new HashMap<>(node.state);
+                        stateCount++;
+                        //System.out.println(reaction.getMap());
+                        //System.out.println("Unmerged newState " + newState);
+                        reaction.getMap().forEach((k, v) -> newState.merge(k, v, (v1, v2) -> v1 + v2));
+                        //System.out.println("Merge newState " + newState);
+
+                        cleanState(newState);
+
+                        if (goalTest(newState)) {
+                            //System.out.println("Solution:");
+                            //System.out.println(solution(reaction.toString() + "\n", node));
+                            System.out.println(reaction.toString());
+                            return true;
+                        }
+                        if(depthFirstSearch(maxDepth,currentDepth + 1, newState, knowledgeBase)){
+                            System.out.println(reaction.toString());
+                            return true;
+                        };
+                        Node newNode = new Node(newState, node, reaction, 0, node.depth+1);
+                    }
+
+                    //Break when we find a Problem we need to solve.
+                    break;
+                }
+            }
+        }
+        //return false;
+    }
+
+    //Checks the priority queue for the two nodes with equals state, which of them has the lowest pathCost
+    //and add that node to the queue.
+    //THIS SHOULD BE TESTED IF IT WORKS CORRECTLY.
+    private static void updateFrontier(PriorityQueue<Node> queue, Node node) {
+        Iterator<Node> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            Node tempNode = iterator.next();
+            if (tempNode.equals(node)) {
+                if (tempNode.pathCost > node.pathCost) {
+                    iterator.remove();
+                    queue.add(node);
+                }
+                break;
+            }
+        }
+    }
+
+    // Help methods.
+
+    private static String solution(String s, Node node) {
+        if(node.parent == null) return s;
+        return solution(s+node.reaction.toString()+"\n", node.parent);
+    }
+
+    private static boolean isStateSeen(ArrayList<HashMap<String, Integer>> explored, Node node) {
+        return explored.contains(node.state);
+    }
+
+    private static void cleanState(HashMap<String, Integer> newState) {
+        Set<String> keys = new HashSet<>(newState.keySet());
+        for (String keyProblem : keys) {
+            if (newState.get(keyProblem) == 0) {
+                newState.remove(keyProblem);
+            }
+        }
+    }
+
+    private static void printState(Node node) {
+        System.out.println("Indhold af state:");
+        System.out.println("Dybde: " + node.depth);
+        for (String key : node.state.keySet()) {
+            System.out.println(node.state.get(key) + key);
+        }
+        System.out.println();
+    }
+
+    private static boolean goalTest(Map<String, Integer> state) {
+        for (String key : state.keySet()) {
+            //System.out.println(state.get(key));
+            if (state.get(key) < 0) return false;
+        }
+
+        System.out.println("Test");
+        return true;
+    }
+}

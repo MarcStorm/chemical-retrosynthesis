@@ -1,0 +1,3 @@
+2NaHCO3 -> Na2CO3 + H2O + CO2
+2NaCl + 2NH4HCO3 -> 2NaHCO3 + 2NH4Cl
+CO2 + CaO

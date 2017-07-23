@@ -1,0 +1,3 @@
+2 NaCl + 2 NH4HCO3 -> 2 NaHCO3, 2 NH4Cl $ 10
+CaCO3 -> CaO + $ CO2 15
+Zn + CuSO4 -> ZnSO4 + Cu $ 20

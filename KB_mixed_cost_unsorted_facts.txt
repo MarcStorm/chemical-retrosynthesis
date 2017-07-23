@@ -1,0 +1,5 @@
+-> CO2 $ 5
+2NaHCO3 -> Na2CO3 + H2O + CO2
+-> Na
+2NaCl + 2NH4HCO3 -> 2NaHCO3 + 2NH4Cl $ 20
+-> H2O $ 100

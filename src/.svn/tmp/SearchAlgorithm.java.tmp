@@ -1,0 +1,80 @@
+import utilities.KnowledgeBase;
+import utilities.Reaction;
+
+import java.util.*;
+
+public class SearchAlgorithm {
+
+    public static boolean breadthFirstSearch(Map<String, Integer> problems, KnowledgeBase knowledgeBase) {
+
+        Node initialNode = new Node (problems, null, 0);
+
+        // Might not be necessary to have this if-statement for our problem.
+        /*if(goalTest(initialNode)) {
+            return solution(initialNode);
+        }*/
+
+        LinkedList<Node> frontier = new LinkedList<Node>();
+        frontier.addLast(initialNode);
+        Set<Node> explored = new HashSet<Node>();
+
+
+        for(;;) {
+            if(frontier.isEmpty()) {
+                return false;
+            }
+            Node node = frontier.removeFirst();
+            explored.add(node);
+
+            for (String key: node.state.keySet()) {
+                if (node.state.get(key) < 0) {
+
+                    List<Reaction> reactions = knowledgeBase.getReactionsOf(key);
+                    HashMap<String, Integer> newState = new HashMap<String, Integer>(problems);
+                    System.out.println(reactions);
+
+                    if (reactions == null) continue;
+
+                    for (Reaction reaction : reactions) {
+<<<<<<< .mine
+                        reaction.getMap().forEach((k, v) -> newProblems.merge(k, v, (v1, v2) -> v1 + v2));
+=======
+                        reaction.getMap().forEach((k, v) -> newState.merge(k, v, (v1, v2) -> v1 + v2));
+                        for (String keyProblem : newState.keySet()) {
+                            if (newState.get(keyProblem) == 0) {
+                                newState.remove(keyProblem);
+                            }
+>>>>>>> .r16
+
+                        }
+
+                        if (goalTest(newState)) return true;
+
+                        Node newNode = new Node(newState, node, reaction.getMap(), 0);
+                        frontier.addLast(newNode);
+                    }
+
+                }
+            }
+
+            // Find first key with '-'
+            //for()
+        }
+    }
+
+
+    // Help methods.
+
+    private static boolean goalTest(Map<String, Integer> state) {
+        for (String key : state.keySet()) {
+            System.out.println(state.get(key));
+            if (state.get(key) < 0) return false;
+        }
+
+        System.out.println("Test");
+        return true;
+    }
+
+    /*private boolean solution(Node node) {
+    }*/
+}

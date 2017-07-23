@@ -1,0 +1,37 @@
+<<<<<<< .mine
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+=======
+import utilities.Parser;
+
+import java.io.IOException;
+
+>>>>>>> .r13
+/**
+ * Created by Marc on 02/03/16.
+ */
+public class Main {
+    public static void main(String[] args) throws IOException {
+        // String to be scanned to find the pattern.
+        //String line = "2C + Na2SO4 -> 2CO2 + Na2S";
+        String line = "C2C";
+        //String pattern = "(.*)(\\d+)(.*)";
+        String pattern = "(\\d*)(.*)";
+
+        // Create a Pattern object
+        Pattern r = Pattern.compile(pattern);
+
+        // Now create matcher object.
+        Matcher m = r.matcher(line);
+        if (m.find( )) {
+            System.out.println("Found value: " + m.group(0) );
+            System.out.println("Found value: " + m.group(1) );
+            System.out.println("Found value: " + m.group(2) );
+        } else {
+            System.out.println("NO MATCH");
+        }
+        Parser parser = new Parser("knowledgeBase.txt");
+        parser.readInput();
+    }
+}
